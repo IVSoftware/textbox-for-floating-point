@@ -1,41 +1,27 @@
-pathological - 
-Lose focus with 1.2345678
-Text changes to 1.23 but this is !Modified detect by comparing value to formatted
-Gain focus with 1.23
-Text changes to 1.2345678 = Still not modified because text matches undelying value
+The [accepted answer](https://stackoverflow.com/a/74894995/5438626) is _easiest_ (as advertised) and is simple, elegant and, well, accepted. 
 
+However, there are common use cases where `FormattedNumberTextBox` would benefit from a more conventional implementation of TextBox:
 
+- Handle the [Enter] key (where control doesn't necessarily lose focus).
+- Ability to set underlying floating point externally.
+- Bindings that rely on `PropertyChange` notifications for changes to the underlying floating point value.
+- Revert to last valid value on invalid input so as not to crash said bindings.
 
+Here's a comparative analysis:
 
-
-- Single control on form
-- Validation event
-- Set externally
-- Revert
-
-
-
-The accepted answer is simple and elegant, but seems suboptimal in the very likely scenario of the user hitting the Enter key (which basically does nothing) to commit the value. Using the built in validation of `TextBox` offers a more intuitive and common behavior where the value is formatted to two places, followed by a SelectAll. 
-
-
-
-
-
+[![comparison][1]][1]
 
 ***
+A more-fully implemented textbox that meets the original requirements.
 
-I tested the behavior with a minimal form.
-
-[![focused entry][1]][1]
-
-[![internal and external value set][2]][2]
-
-***
-Example of a custom textbox that uses [Textbox.Validating](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.control.validating?view=windowsdesktop-7.0) to meet these requirements:
-
-    class TextBoxF2 : TextBox, INotifyPropertyChanged
+    class TextBoxFP : TextBox, INotifyPropertyChanged
     {
-        public decimal Value    // The underlying value.
+        public TextBoxFP()
+        {
+            _unmodified = Text = "0.00";
+            CausesValidation = true;
+        }
+        public double Value  
         {
             get => _value;
             set
@@ -43,57 +29,77 @@ Example of a custom textbox that uses [Textbox.Validating](https://learn.microso
                 if (!Equals(_value, value))
                 {
                     _value = value;
+                    formatValue();
                     OnPropertyChanged();
                 }
             }
         }
-        decimal _value = 0;
-        public TextBoxF2()
+        double _value = 0;
+        string _unmodified;
+        public string Format { get; set; } = "N2";
+        protected override void OnTextChanged(EventArgs e)
         {
-            CausesValidation = true;
-            TextChanged += (sender, e) => _isDirty = true;
-            Validating += (sender, e) =>
+            base.OnTextChanged(e);
+            if(Focused)
             {
-                if (_isDirty && decimal.TryParse(Text, out decimal success))
+                Modified = !Text.Equals(_unmodified);
+            }
+        }
+        protected override void OnValidating(CancelEventArgs e)
+        {
+            base.OnValidating(e);
+            if (Modified)
+            {
+                if (double.TryParse(Text, out double value))
                 {
-                    Value = success;
+                    Value = value;
                 }
-            };
-            GotFocus += (sender, e) => BeginInvoke(() => SelectAll());
-            KeyDown += (sender, e) =>
-            {   
-                // Validate if the Enter key is pressed
-                if (e.KeyData.Equals(Keys.Enter))
+                formatValue();
+                _unmodified = Text;
+                Modified = false;
+            }
+        }
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            if (!(ReadOnly || Modified))
+            {
+                BeginInvoke(() =>
                 {
+                    int selB4 = SelectionStart;
+                    Text = Value == 0 ? "0.00" : $"{Value}";
+                    Modified = true;
+                    Select(Math.Min(selB4, Text.Length - 1), 0);
+                });
+            }
+        }
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            switch (e.KeyData)
+            {
+                case Keys.Return:
                     e.SuppressKeyPress = e.Handled = true;
                     OnValidating(new CancelEventArgs());
-                    BeginInvoke(() => SelectAll());
-                }
-            };
-        }        
-        private void onValueChanged()
-        {   
-            // Format value cause by keyboard or external value change.
-            Text = Value.ToString("F2");
-            _isDirty = false;
+                    break;
+                case Keys.Escape:
+                    e.SuppressKeyPress = e.Handled = true;
+                    formatValue();
+                    break;
+            }
         }
-        bool _isDirty = false;
-        // Fire property changes when value changes
+        private void formatValue()
+        {
+            Text = Value.ToString(Format);
+            Modified = false;
+            BeginInvoke(() => SelectAll());
+        }
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
-            switch (propertyName)
-            {
-                case nameof(Value):
-                    onValueChanged();
-                    break;
-            }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 
-There are many ways to do what you're asking. Hopefully this moves you closer to an ideal solution.
 
-
-  [1]: https://i.stack.imgur.com/SPbfz.png
-  [2]: https://i.stack.imgur.com/QFaPC.png
+  [1]: https://i.stack.imgur.com/NiaLd.png
