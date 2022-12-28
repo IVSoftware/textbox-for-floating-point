@@ -41,6 +41,11 @@ namespace formatted_textbox
             }
         }
         double _value = 0;
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -70,15 +75,6 @@ namespace formatted_textbox
                 Modified = false;
             }
         }
-        string _unmodified;
-        protected override void OnTextChanged(EventArgs e)
-        {
-            base.OnTextChanged(e);
-            if(Focused)
-            {
-                Modified = !Text.Equals(_unmodified);
-            }
-        }
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
@@ -93,17 +89,21 @@ namespace formatted_textbox
                 });
             }
         }
+        string _unmodified;
+        protected override void OnTextChanged(EventArgs e)
+        {
+            base.OnTextChanged(e);
+            if(Focused)
+            {
+                Modified = !Text.Equals(_unmodified);
+            }
+        }
         public string Format { get; set; } = "N2";
         private void formatValue()
         {
             Text = Value.ToString(Format);
             Modified = false;
             BeginInvoke(() => SelectAll());
-        }
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

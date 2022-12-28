@@ -56,7 +56,7 @@ This performs format + SelectAll. If the new input string can't be parsed it sim
 - Whether or not the control gains focus as a result.
 - Only if control is _not_ read only.
 
-_Use BeginInvoke_ which doesn't block remaining mouse events in queue.
+_Use BeginInvoke which doesn't block remaining mouse events in queue._
 
     protected override void OnMouseDown(MouseEventArgs e)
     {
@@ -106,5 +106,24 @@ Allows setting the underlying value programmatically using  `textBoxFormatted.Va
         }
     }
 
+***
+**Handle formatting and managing the built-in `Modified` property of the text box.**
+
+    string _unmodified;
+    protected override void OnTextChanged(EventArgs e)
+    {
+        base.OnTextChanged(e);
+        if(Focused)
+        {
+            Modified = !Text.Equals(_unmodified);
+        }
+    }
+    public string Format { get; set; } = "N2";
+    private void formatValue()
+    {
+        Text = Value.ToString(Format);
+        Modified = false;
+        BeginInvoke(() => SelectAll());
+    }
 
   [1]: https://i.stack.imgur.com/NiaLd.png
