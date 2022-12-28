@@ -1,6 +1,12 @@
 The [accepted answer](https://stackoverflow.com/a/74894995/5438626) is simple and elegant. As I understand it, the scheme relies on changes to the focused state of the control, but if the user types some keys then hits the Enter key there's no guarantee that focus _will_ change. 
 
 So, this post just makes a few tweaks to an already excellent answer by handling this case and also adding another nice amenity - a settable/bindable `Value` property that fires `PropertyChanged` events when a new valid value is received (either by keyboard input or programmatically).
+    
+![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.focused-entry.png)
+Focused entry or re-entry.
+
+![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.validate.png)
+Response to Enter key
 
 ***
 **Start with a bindable `Value` property for the underlying value**
@@ -76,12 +82,6 @@ This performs format + SelectAll. If the new input string can't be parsed it sim
             Modified = false;
         }
     }
-    
-![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.focused-entry.png)
-Focused entry or re-entry.
-
-![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.validate.png)
-Response to Enter key
 
 
   [1]: https://i.stack.imgur.com/NiaLd.png
