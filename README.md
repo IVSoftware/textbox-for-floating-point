@@ -56,6 +56,8 @@ This performs format + SelectAll. If the new input string can't be parsed it sim
 - Whether or not the control gains focus as a result.
 - Only if control is _not_ read only.
 
+_Use BeginInvoke_ which doesn't block remaining mouse events in queue.
+
     protected override void OnMouseDown(MouseEventArgs e)
     {
         base.OnMouseDown(e);
