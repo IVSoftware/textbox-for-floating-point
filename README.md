@@ -1,6 +1,6 @@
 The [accepted answer](https://stackoverflow.com/a/74894995/5438626) is simple and elegant. As I understand it, the scheme relies on changes to the focused state of the control, but if the user types some keys then hits the Enter key there's no guarantee that focus _will_ change. 
 
-So, this post just makes a few tweaks to an already excellent answer by handling [Enter] and adding another nice amenity - a settable/bindable `Value` property that fires `PropertyChanged` events when a new valid value is received (either by keyboard input or programmatically).
+So, this post just makes a few tweaks to an already excellent answer by handling [Enter] and adding another nice amenity - a settable/bindable `Value` property that fires `PropertyChanged` events when a new valid value is received (either by keyboard input or programmatically). At the same time, it ensures that when the textbox is `ReadOnly` it _always_ displays the formatted value.
     
 ![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.focused-entry.png)
 Focused entry or re-entry.
@@ -31,7 +31,7 @@ This method _also_ responds to an Escape key event by reverting to the last good
 
 
 ***
-**Define behavior for when `TextBox` is calls its built-in validation.**
+**Define behavior for when `TextBox` calls its built-in validation.**
 
 This performs format + SelectAll. If the new input string can't be parsed it simply reverts to the previous valid state.
 
@@ -50,7 +50,28 @@ This performs format + SelectAll. If the new input string can't be parsed it sim
         }
     }
 
-    ***
+***
+**Ensure that a mouse click causes the full-resolution display:**
+
+- Whether or not the control gains focus as a result.
+- Only if control is _not_ read only.
+
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+        base.OnMouseDown(e);
+        if (!(ReadOnly || Modified))
+        {
+            BeginInvoke(() =>
+            {
+                int selB4 = SelectionStart;
+                Text = Value == 0 ? "0.00" : $"{Value}";
+                Modified = true;
+                Select(Math.Min(selB4, Text.Length - 1), 0);
+            });
+        }
+    }
+
+***
 **Implement the bindable `Value` property for the underlying value**
 
 Allows setting the underlying value programmatically using  `textBoxFormatted.Value = 123.456789`.
