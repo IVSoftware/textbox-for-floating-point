@@ -54,6 +54,8 @@ Allows setting the underlying value programmatically e.g.  `textBoxFormatted.Val
         }
     }
 
+![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.enter.png)
+
 
 
 
