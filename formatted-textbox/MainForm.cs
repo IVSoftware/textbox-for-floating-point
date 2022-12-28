@@ -10,11 +10,9 @@ namespace formatted_textbox
             InitializeComponent();
             textBoxFormatted.PropertyChanged += (sender, e) =>
             {
-                if(
-                      (sender is TextBoxFP textbox) && 
-                      (e.PropertyName == nameof(TextBoxFP.Value)))
+                if(e.PropertyName == nameof(TextBoxFP.Value))
                 {
-                    textBoxBulk.Value = textbox.Value * 100;
+                    textBoxBulk.Value = textBoxFormatted.Value * 100;
                     textBoxDiscount.Value = textBoxBulk.Value * - 0.10;
                     textBoxNet.Value = textBoxBulk.Value + textBoxDiscount.Value;
                 }
@@ -43,6 +41,21 @@ namespace formatted_textbox
             }
         }
         double _value = 0;
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            switch (e.KeyData)
+            {
+                case Keys.Return:
+                    e.SuppressKeyPress = e.Handled = true;
+                    OnValidating(new CancelEventArgs());
+                    break;
+                case Keys.Escape:
+                    e.SuppressKeyPress = e.Handled = true;
+                    formatValue();
+                    break;
+            }
+        }
         string _unmodified;
         public string Format { get; set; } = "N2";
         protected override void OnTextChanged(EventArgs e)
@@ -79,21 +92,6 @@ namespace formatted_textbox
                     Modified = true;
                     Select(Math.Min(selB4, Text.Length - 1), 0);
                 });
-            }
-        }
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            base.OnKeyDown(e);
-            switch (e.KeyData)
-            {
-                case Keys.Return:
-                    e.SuppressKeyPress = e.Handled = true;
-                    OnValidating(new CancelEventArgs());
-                    break;
-                case Keys.Escape:
-                    e.SuppressKeyPress = e.Handled = true;
-                    formatValue();
-                    break;
             }
         }
         private void formatValue()

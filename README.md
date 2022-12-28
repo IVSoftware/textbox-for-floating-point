@@ -1,4 +1,61 @@
-The [accepted answer](https://stackoverflow.com/a/74894995/5438626) is _easiest_ (as advertised) and is simple, elegant and, well, accepted. 
+The [accepted answer](https://stackoverflow.com/a/74894995/5438626) is simple and elegant. As I understand it, the scheme relies on changes to the focused state of the control, but if the user types some keys then hits the Enter key there's no guarantee that focus _will_ change. Another nice amenity would be to have a settable/bindable `Value` property that fires `PropertyChanged` events when a new valid value is received (either by keyboard input or programmatically).
+
+In other words, this post just offers a few tweaks to an already excellent answer.
+
+***
+**Start with a bindable `Value` property for the undelying value**
+
+Allows setting the underlying value programmatically e.g.  `textBoxFormatted.Value = 123.456789`.
+
+    class TextBoxFP : TextBox, INotifyPropertyChanged
+    {
+        public TextBoxFP()
+        {
+            _unmodified = Text = "0.00";
+            CausesValidation = true;
+        }
+        public double Value  
+        {
+            get => _value;
+            set
+            {
+                if (!Equals(_value, value))
+                {
+                    _value = value;
+                    formatValue();
+                    OnPropertyChanged();
+                }
+            }
+        }
+        double _value = 0;    
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+***
+**Handle the Enter key**
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+        switch (e.KeyData)
+        {
+            case Keys.Return:
+                e.SuppressKeyPress = e.Handled = true;
+                OnValidating(new CancelEventArgs());
+                break;
+            case Keys.Escape:
+                e.SuppressKeyPress = e.Handled = true;
+                formatValue();
+                break;
+        }
+    }
+
+
+
 
 However, there are common use cases where `FormattedNumberTextBox` would benefit from a more conventional implementation of TextBox:
 
