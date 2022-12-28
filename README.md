@@ -1,6 +1,6 @@
 The [accepted answer](https://stackoverflow.com/a/74894995/5438626) is simple and elegant. As I understand it, the scheme relies on changes to the focused state of the control, but if the user types some keys then hits the Enter key there's no guarantee that focus _will_ change. 
 
-So, this post seeks to expand on an already excellent answer by tweaking this and also adding another nice amenity - a settable/bindable `Value` property that fires `PropertyChanged` events when a new valid value is received (either by keyboard input or programmatically).
+So, this post just makes a few tweaks to an already excellent answer by handling this case and also adding another nice amenity - a settable/bindable `Value` property that fires `PropertyChanged` events when a new valid value is received (either by keyboard input or programmatically).
 
 ***
 **Start with a bindable `Value` property for the underlying value**
