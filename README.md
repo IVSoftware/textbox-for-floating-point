@@ -56,7 +56,6 @@ This method _also_ responds to an Escape key event by reverting to the last good
         }
     }
 
-![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.enter.png)
 
 ***
 **Define behavior for when `TextBox` is calls its built-in validation.**
@@ -78,7 +77,11 @@ This performs format + SelectAll. If the new input string can't be parsed it sim
         }
     }
     
+![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.enter.png)
+Focused entry or re-entry.
+
 ![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.validate.png)
+Response to Enter key
 
 
   [1]: https://i.stack.imgur.com/NiaLd.png
