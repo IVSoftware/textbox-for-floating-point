@@ -77,7 +77,7 @@ This performs format + SelectAll. If the new input string can't be parsed it sim
         }
     }
     
-![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.enter.png)
+![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.focused-entry.png)
 Focused entry or re-entry.
 
 ![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.validate.png)
