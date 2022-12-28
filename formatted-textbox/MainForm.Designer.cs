@@ -92,7 +92,7 @@
             this.groupBox.Size = new System.Drawing.Size(239, 197);
             this.groupBox.TabIndex = 4;
             this.groupBox.TabStop = false;
-            this.groupBox.Text = "Bindings";
+            this.groupBox.Text = "Price Extended";
             // 
             // textBoxNet
             // 
@@ -161,6 +161,7 @@
             this.Controls.Add(this.buttonTestValue);
             this.Controls.Add(this.textBoxFormatted);
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Test Form";
             this.groupBox.ResumeLayout(false);
             this.groupBox.PerformLayout();

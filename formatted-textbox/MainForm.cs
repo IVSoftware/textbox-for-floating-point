@@ -70,7 +70,7 @@ namespace formatted_textbox
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
-            if (!ReadOnly)
+            if (!(ReadOnly || Modified))
             {
                 BeginInvoke(() =>
                 {
