@@ -126,4 +126,25 @@ Allows setting the underlying value programmatically using  `textBoxFormatted.Va
         BeginInvoke(() => SelectAll());
     }
 
+***
+[Testing](https://github.com/IVSoftware/textbox-for-floating-point.git)
+
+    public partial class MainForm : Form
+    {
+        public MainForm()
+        {
+            InitializeComponent();
+            textBoxFormatted.PropertyChanged += (sender, e) =>
+            {
+                if(e.PropertyName == nameof(TextBoxFP.Value))
+                {
+                    textBoxBulk.Value = textBoxFormatted.Value * 100;
+                    textBoxDiscount.Value = textBoxBulk.Value * - 0.10;
+                    textBoxNet.Value = textBoxBulk.Value + textBoxDiscount.Value;
+                }
+            };
+            buttonTestValue.Click += (sender, e) => textBoxFormatted.Value = (double)Math.PI;
+        }
+    }
+
   [1]: https://i.stack.imgur.com/NiaLd.png
