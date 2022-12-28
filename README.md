@@ -1,11 +1,11 @@
-The [accepted answer](https://stackoverflow.com/a/74894995/5438626) is simple and elegant. But as I understand it, the scheme relies on changes to the focused state of the control so there's at least one "possible" issue: if the user types some keys then hits the Enter key there's no guarantee that focus _will_ change. 
+The [accepted answer](https://stackoverflow.com/a/74894995/5438626) is simple and elegant. It states that it's the "easiest" answer and I agree! But as I understand it, the scheme relies on changes to the focused state of the control so there's at least one "possible" issue: if the user types some keys then hits the Enter key there's no guarantee that focus _will_ change. 
 
 So, this post just makes a few tweaks to an already excellent answer by handling [Enter] and adding another nice amenity - a settable/bindable `Value` property that fires `PropertyChanged` events when a new valid value is received (either by keyboard input or programmatically). At the same time, it ensures that when the textbox is `ReadOnly` it _always_ displays the formatted value.
     
-![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.focused-entry.png)
+[![screenshot focused entry or reentry][1]][1]
 Focused entry or re-entry.
 
-![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.validate.png)
+[![response to enter key][2]][2]
 Response to Enter key
 
 ***
@@ -107,7 +107,7 @@ Allows setting the underlying value programmatically using  `textBoxFormatted.Va
     }
 
 ***
-**Handle formatting and managing the built-in `Modified` property of the text box.**
+**Manage the built-in `Modified` property of the text box and the actual formatting.**
 
     string _unmodified;
     protected override void OnTextChanged(EventArgs e)
@@ -127,7 +127,9 @@ Allows setting the underlying value programmatically using  `textBoxFormatted.Va
     }
 
 ***
-[Testing](https://github.com/IVSoftware/textbox-for-floating-point.git)
+Testing
+
+Bind the `PropertyChanged` event and attempt various valid (1.2345) and invalid ("abc") entries.
 
     public partial class MainForm : Form
     {
@@ -147,4 +149,6 @@ Allows setting the underlying value programmatically using  `textBoxFormatted.Va
         }
     }
 
-  [1]: https://i.stack.imgur.com/NiaLd.png
+
+  [1]: https://i.stack.imgur.com/3TJFE.png
+  [2]: https://i.stack.imgur.com/hU3Ul.png
