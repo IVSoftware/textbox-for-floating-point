@@ -1,45 +1,12 @@
 The [accepted answer](https://stackoverflow.com/a/74894995/5438626) is simple and elegant. As I understand it, the scheme relies on changes to the focused state of the control, but if the user types some keys then hits the Enter key there's no guarantee that focus _will_ change. 
 
-So, this post just makes a few tweaks to an already excellent answer by handling this case and also adding another nice amenity - a settable/bindable `Value` property that fires `PropertyChanged` events when a new valid value is received (either by keyboard input or programmatically).
+So, this post just makes a few tweaks to an already excellent answer by handling [Enter] and adding another nice amenity - a settable/bindable `Value` property that fires `PropertyChanged` events when a new valid value is received (either by keyboard input or programmatically).
     
 ![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.focused-entry.png)
 Focused entry or re-entry.
 
 ![screenshot](https://github.com/IVSoftware/textbox-for-floating-point/blob/master/formatted-textbox/Screenshots/single.validate.png)
 Response to Enter key
-
-***
-**Start with a bindable `Value` property for the underlying value**
-
-Allows setting the underlying value programmatically e.g.  `textBoxFormatted.Value = 123.456789`.
-
-    class TextBoxFP : TextBox, INotifyPropertyChanged
-    {
-        public TextBoxFP()
-        {
-            _unmodified = Text = "0.00";
-            CausesValidation = true;
-        }
-        public double Value  
-        {
-            get => _value;
-            set
-            {
-                if (!Equals(_value, value))
-                {
-                    _value = value;
-                    formatValue();
-                    OnPropertyChanged();
-                }
-            }
-        }
-        double _value = 0;    
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
 
 ***
 **Handle the Enter key**
@@ -80,6 +47,39 @@ This performs format + SelectAll. If the new input string can't be parsed it sim
             formatValue();
             _unmodified = Text;
             Modified = false;
+        }
+    }
+
+    ***
+**Implement the bindable `Value` property for the underlying value**
+
+Allows setting the underlying value programmatically using  `textBoxFormatted.Value = 123.456789`.
+
+    class TextBoxFP : TextBox, INotifyPropertyChanged
+    {
+        public TextBoxFP()
+        {
+            _unmodified = Text = "0.00";
+            CausesValidation = true;
+        }
+        public double Value  
+        {
+            get => _value;
+            set
+            {
+                if (!Equals(_value, value))
+                {
+                    _value = value;
+                    formatValue();
+                    OnPropertyChanged();
+                }
+            }
+        }
+        double _value = 0;    
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 
