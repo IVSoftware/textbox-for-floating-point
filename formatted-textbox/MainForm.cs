@@ -56,16 +56,6 @@ namespace formatted_textbox
                     break;
             }
         }
-        string _unmodified;
-        public string Format { get; set; } = "N2";
-        protected override void OnTextChanged(EventArgs e)
-        {
-            base.OnTextChanged(e);
-            if(Focused)
-            {
-                Modified = !Text.Equals(_unmodified);
-            }
-        }
         protected override void OnValidating(CancelEventArgs e)
         {
             base.OnValidating(e);
@@ -78,6 +68,15 @@ namespace formatted_textbox
                 formatValue();
                 _unmodified = Text;
                 Modified = false;
+            }
+        }
+        string _unmodified;
+        protected override void OnTextChanged(EventArgs e)
+        {
+            base.OnTextChanged(e);
+            if(Focused)
+            {
+                Modified = !Text.Equals(_unmodified);
             }
         }
         protected override void OnMouseDown(MouseEventArgs e)
@@ -94,6 +93,7 @@ namespace formatted_textbox
                 });
             }
         }
+        public string Format { get; set; } = "N2";
         private void formatValue()
         {
             Text = Value.ToString(Format);
